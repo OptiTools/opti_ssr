@@ -4,96 +4,63 @@
 
 from __future__ import print_function
 import sys
-import socket
-import optirx as rx
 import numpy as np
 
+from opti_network import opti_network
+from ssr_network import ssr_network
 
 # server IP, running the SSR
 # Mac IP/wall-e: 139.30.207.123
-# Debian IP: 139.30.207.218 ++
+# Debian IP: 139.30.207.218
 
-def recv_data():
+class ssr_localwfs:
     """
-    connect to Optitrack system on the same machine and receiving data from it
-
-    based on optirx-demo.py
-    source: https://bitbucket.org/astanin/python-optirx
+    #todo
     """
+    def __init__(self, IP='139.30.207.218', port=4711, N=64, R=1.00, end_message='/0'):
+        self._N = N
+        self._R = R
+        self._ip = IP
+        self._port = port
 
-    dsock = rx.mkdatasock()
-    while True:
-        data = dsock.recv(rx.MAX_PACKETSIZE)
-        packet = rx.unpack(data, version=version)
-        if type(packet) is rx.SenderData:
-            version = packet.natnet_version
-            print("NatNet version received:", version)
-        if type(packet) in [rx.SenderData, rx.ModelDefs, rx.FrameOfData]:
-		    # z-coordinate of Motive is the y-coordinate of the SSR
-            x = packet.rigid_bodies[0].position[0]
-            y = packet.rigid_bodies[0].position[1]
-            z = packet.rigid_bodies[0].position[2]
-            return x, y, z
+        self._end_message = end_message
+        self._ssr_net = ssr_network(self._ip, self._port, self._end_message)
+        self._opti_net = opti_network()
 
-def src_creation(N, end_message):
-    """
-    generating the XML message to create new sources in the SSR
+    def __del__(self):
+        del self._ssr_net
+        del self._opti_net
 
-    Parameters
-    ----------
-    N : int, optional
-        Number of Sources.
-    end_message : str, optional
-        Symbol to terminate the XML messages send to SSR.
+    def create_src(self):
+        """
+        creating a specified amount of new sources via network connection to the SSR
+        """
+        for src_id in range(1, self._N+1):
+            self._ssr_net.src_creation(src_id)
 
-    Returns
-    -------
+    def src_pos_circular_array(self):
+        """
+        defining source positions in a circular array based on the received data
 
-    """
-    new_sources = '<request>'
-    for i in range(1, N+1):
-        source = '<source new="true" id="{0}" port="0"></source>'.format(i)
-        new_sources += source
-    new_sources = new_sources+'</request>'+end_message
-    return new_sources
+        """
+        # get position data from Motive
+        x, y, z = self._opti_net.get_rigid_body_position()
+        # z-coordinate of Motive is the y-coordinate of the SSR
+        center = [x, z, 0]
 
-def src_position(N, R, end_message):
-    """
-    defining source positions based on the received data
+        # calculation of source positions in a circular array
+        alpha = np.linspace(0, 2 * np.pi, self._N, endpoint=False)
+        src_pos = np.zeros((self._N, len(center)))
+        src_pos[:, 0] = self._R * np.cos(alpha)
+        src_pos[:, 1] = self._R * np.sin(alpha)
+        src_pos += center
 
-    Parameters
-    ----------
-    N : int, optional
-        Number of Sources.
-    R : int, optional
-        Radius of circular source array in meter.
-    end_message : str, optional
-        Symbol to terminate the XML messages send to SSR.
-
-    Returns
-    -------
+        # sending position data to SSR; number of the source id depends on the number of existing sources
+        for src_id in range(1, self._N+1):
+            self._ssr_net.src_position(src_id, src_pos[src_id-1, 0], src_pos[src_id-1, 1])
 
 
-    """
-    # z-coordinate of Motive is the y-coordinate of the SSR
-    x, y, z = recv_data()
-    center = [x, z, 0]
-
-    # definition of source positions in a circular array
-    alpha = np.linspace(0, 2 * np.pi, N, endpoint=False)
-    positions = np.zeros((N, len(center)))
-    positions[:, 0] = R * np.cos(alpha)
-    positions[:, 1] = R * np.sin(alpha)
-    positions += center
-
-    # number of the source id depends on the number of existing sources
-    src_pos = '<request>'
-    for i in range(1, N+1):
-        src_pos += '<source id="{0}" name="SourceMotive{0}"><position x="{1:4.2f}" y="{2:4.2f}"/></source>'.format(i, positions[i-1, 0], positions[i-1, 1])
-    src_pos += '</request>'+ end_message
-    return src_pos
-
-def ssr_send(IP='139.30.207.123', port=4711, buffer=1024, N=12, R=1, end_message='\0'):
+def ssr_send(IP='139.30.207.123', port=4711, N=12, R=1.00, end_message='\0'):
     """ #todo
 
     Parameters
@@ -121,30 +88,18 @@ def ssr_send(IP='139.30.207.123', port=4711, buffer=1024, N=12, R=1, end_message
     if sys.argv[2:]:
         port = int(sys.argv[2])
     if sys.argv[3:]:
-        buffer = int(sys.argv[3])
+        N = int(sys.argv[3])
     if sys.argv[4:]:
-        N = int(sys.argv[4])
+        R = float(sys.argv[4])
     if sys.argv[5:]:
-        R = float(sys.argv[5])
-    if sys.argv[6:]:
-        end_message = str(sys.argv[6])
+        end_message = str(sys.argv[5])
 
-    # IP4 und TCP connection
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    # connection to the server
-    s.connect((IP, port))
-
-    # creating a new source, which gets the coordinates from Motive
-    new_sources = src_creation(N, end_message)
-
-    # sending the source and position data to SSR
-    s.send(new_sources.encode())
+    opti_ssr = ssr_localwfs(IP, port, N, R, end_message)
+    opti_ssr.create_src()
     while True:
-        position = src_position(N, R, end_message)
-        s.send(position.encode())
-
-    s.close()
+        opti_ssr.src_pos_circular_array()
+    del opti_ssr
 
 
 
