@@ -10,56 +10,40 @@ class opti_network:
     """
     #todo
     """ 
-    def __init__(self, SDK_version=(3, 0, 0, 0), rb_id=0):
-        self._rb_id = rb_id
+    def __init__(self, SDK_version=(3, 0, 0, 0)):
         self._dsock = rx.mkdatasock()
         self._SDK_version = SDK_version
 
-    def get_rigid_body_position(self):
-        """
-        connect to Optitrack system on the same machine and receiving data from it
-
-        based on optirx-demo.py
-        source: https://bitbucket.org/astanin/python-optirx
-        """
-
+    def get_packet(self, packet_types=None):
         while True:
             data = self._dsock.recv(rx.MAX_PACKETSIZE)
             packet = rx.unpack(data, version=self._SDK_version)
-            if type(packet) is rx.SenderData:
-                version = packet.natnet_version
-                print("NatNet version received:", version)
-            if type(packet) in [rx.SenderData, rx.ModelDefs, rx.FrameOfData]:
-		        # z-coordinate of Motive is the y-coordinate of the SSR
-                x = packet.rigid_bodies[self._rb_id].position[0]
-                y = packet.rigid_bodies[self._rb_id].position[1]
-                z = packet.rigid_bodies[self._rb_id].position[2]
-                return x, y, z
+            if not packet_types or type(packet) in packet_types:
+                return packet
+            
+    def get_rigid_body(self, rb_id):
+        
+        packet = self.get_packet([rx.SenderData, rx.ModelDefs, rx.FrameOfData])g
+        return packet.rigid_bodies[rb_id]
 
-    def get_rigid_body_orientation(self):
-        # roll, pitch, yaw zurueckgeben
-        # mit .orientation[0-3]
-        # Quaternionen --> "Gimbel-Lock"-problem
-        # Quaternionen --> Rotationsmatrix bestimmen?
-        # Bsp. zur umwandlung der Quarternionen in C in NatNetSDK ... irgendwas mit simple...3D.cpp
-        while True:
-            data = self._dsock.recv(rx.MAX_PACKETSIZE)
-            packet = rx.unpack(data, version=self._SDK_version)
-            if type(packet) is rx.SenderData:
-                version = packet.natnet_version
-                print("NatNet version received:", version)
-            if type(packet) in [rx.SenderData, rx.ModelDefs, rx.FrameOfData]:
-                # Motive quaternion orientation data output
-                
-                q = _Quaternion(packet.rigid_bodies[self._rb_id].orientation)
-                
-                return q.yaw_pitch_roll
-                
-            # Convert Motive quaternion output to euler angles
-            # Motive coordinate conventions : X(Pitch), Y(Yaw), Z(Roll), Relative, RHS
+    def get_rigid_body_position(self, rb_id):
+
+        rigid_body = self.get_rigid_body(rb_id)
+        return rigid_body.position
+
+    def get_rigid_body_orientation(self, rb_id, yaw_pitch_roll=False):
+        
+        rigid_body = self.get_rigid_body(rb_id)
+        if yaw_pitch_roll:
+            q = _Quaternion(rigid_body.orientation)
+            return q.yaw_pitch_roll
+        else:
+            return rigid_body.orientation       
 
 class _Quaternion(pyquaternion.Quaternion):
-
+    """Work-around until pull request for original packages is accepted
+    https://github.com/KieranWynn/pyquaternion/pull/2
+    """
 
     @property
     def yaw_pitch_roll(self):
@@ -69,16 +53,18 @@ class _Quaternion(pyquaternion.Quaternion):
             yaw:    rotation angle around the z-axis in radians, in the range `[-pi, pi]`
             pitch:  rotation angle around the y'-axis in radians, in the range `[-pi/2, -pi/2]`
             roll:   rotation angle around the x''-axis in radians, in the range `[-pi, pi]` 
+        
+        The resulting rotation_matrix would be R = R_x(roll) R_y(pitch) R_z(yaw)
             
         Note: 
             This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
         """
         
         self._normalise()
-        yaw = np.arctan2(2*(self.q[0]*self.q[3] + self.q[1]*self.q[2]), 
+        yaw = np.arctan2(2*(self.q[0]*self.q[3] - self.q[1]*self.q[2]), 
             1 - 2*(self.q[2]**2 + self.q[3]**2))
-        pitch = np.arcsin(2*(self.q[0]*self.q[2] - self.q[3]*self.q[1]))
-        roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]), 
+        pitch = np.arcsin(2*(self.q[0]*self.q[2] + self.q[3]*self.q[1]))
+        roll = np.arctan2(2*(self.q[0]*self.q[1] - self.q[2]*self.q[3]), 
             1 - 2*(self.q[1]**2 + self.q[2]**2))
 
         return yaw, pitch, roll

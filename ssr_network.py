@@ -20,7 +20,7 @@ class ssr_network:
     -------
     """
 
-    def __init__(self, IP='139.30.207.123', port=4711, end_message='/0'):
+    def __init__(self, IP='139.30.207.123', port=4711, end_message='\0'):
         self._ip = IP
         self._port = port
         self._end_message = end_message
@@ -48,5 +48,13 @@ class ssr_network:
         # z-coordinate of Motive is the y-coordinate of the SSR
         position = '<request><source id="{0}" name="SourceMotive{0}"><position x="{1:4.2f}" y="{2:4.2f}"/></source></request>'.format(src_id, x, y)+self._end_message
         self._s.send(position.encode())
-
+        
+    def ref_position(self, x, y):
+        command = '<request><reference><position x="{0:4.2f}" y="{1:4.2f}"/></reference></request>'.format(x, y)+self._end_message
+        self._s.send(command.encode())
+        
+    def ref_orientation(self, alpha):
+        msg = '<request><reference><orientation azimuth="{0:4.2f}"/></reference></request>'.format(alpha)+self._end_message
+        print(msg.encode())
+        self._s.send(msg.encode())
 
