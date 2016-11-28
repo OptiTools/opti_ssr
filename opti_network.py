@@ -4,6 +4,7 @@ A python module to connect to Optitrack system on the same machine and receiving
 
 import optirx as rx
 import numpy as np
+import pyquaternion  # for handling quaternions
 
 class opti_network:
     """
@@ -49,10 +50,36 @@ class opti_network:
                 print("NatNet version received:", version)
             if type(packet) in [rx.SenderData, rx.ModelDefs, rx.FrameOfData]:
                 # Motive quaternion orientation data output
-                qx = packet.rigid_bodies[self._rb_id].orientation[0]
-                qy = packet.rigid_bodies[self._rb_id].orientation[1]
-                qz = packet.rigid_bodies[self._rb_id].orientation[2]
-                qw = packet.rigid_bodies[self._rb_id].orientation[3]
+                
+                q = _Quaternion(packet.rigid_bodies[self._rb_id].orientation)
+                
+                return q.yaw_pitch_roll
+                
             # Convert Motive quaternion output to euler angles
             # Motive coordinate conventions : X(Pitch), Y(Yaw), Z(Roll), Relative, RHS
+
+class _Quaternion(pyquaternion.Quaternion):
+
+
+    @property
+    def yaw_pitch_roll(self):
+        """Get the equivalent yaw-pitch-roll angles aka. intrinsic Tait-Bryan angles following the z-y'-x'' convention
+        
+        Returns:
+            yaw:    rotation angle around the z-axis in radians, in the range `[-pi, pi]`
+            pitch:  rotation angle around the y'-axis in radians, in the range `[-pi/2, -pi/2]`
+            roll:   rotation angle around the x''-axis in radians, in the range `[-pi, pi]` 
+            
+        Note: 
+            This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+        """
+        
+        self._normalise()
+        yaw = np.arctan2(2*(self.q[0]*self.q[3] + self.q[1]*self.q[2]), 
+            1 - 2*(self.q[2]**2 + self.q[3]**2))
+        pitch = np.arcsin(2*(self.q[0]*self.q[2] - self.q[3]*self.q[1]))
+        roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]), 
+            1 - 2*(self.q[1]**2 + self.q[2]**2))
+
+        return yaw, pitch, roll
 
