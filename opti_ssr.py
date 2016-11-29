@@ -85,7 +85,7 @@ def ssr_send(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=None,
     """
     # setting arguments if executed in command line
     if sys.argv[1:]:
-        ssr_ip = str(sys.argv[1])
+        opti_ip = str(sys.argv[1])
     if sys.argv[2:]:
         ssr_port = int(sys.argv[2])
     if sys.argv[3:]:
@@ -93,7 +93,7 @@ def ssr_send(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=None,
     if sys.argv[4:]:
         R = float(sys.argv[4])
     if sys.argv[5:]:
-        opti_ip = str(sys.argv[5])
+        ssr_ip = str(sys.argv[5])
     if sys.argv[6:]:
         multicast_address = str(sys.argv[6])
     if sys.argv[7:]:
@@ -102,7 +102,7 @@ def ssr_send(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=None,
         end_message = str(sys.argv[8])
 
 
-    opti_ssr = ssr_localwfs(ssr_ip, ssr_port, N, R, end_message)
+    opti_ssr = ssr_localwfs(ssr_ip, ssr_port, N, R, opti_ip, multicast_address, opti_port, end_message)
     opti_ssr.create_src()
     while True:
         opti_ssr.src_pos_circular_array()
