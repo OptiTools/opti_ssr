@@ -40,6 +40,7 @@ def demo(IP='139.30.207.123', port=4711, end_message='\0'):
     ssr.src_creation(0)
     headtracker = ssr_optitrack.HeadTracker(optitrack, ssr)
     headtracker.start()
-    
+
 if __name__ == "__main__":
     demo()
+

@@ -66,3 +66,5 @@ class ssr_network:
         Change orientation of an existing source in degrees (zero in positive x-direction).
         """
         orientation = '<request><source id="{0}"><orientation azimuth="{1}"/></source></request>'.format(src_id, alpha)+self._end_message
+        self._s.send(orientation.encode())
+
