@@ -8,14 +8,17 @@ import threading
 import socket
 from time import sleep
 from numpy import pi
+from abc import ABCMeta, abstractmethod # for abstract classes and methods
 
 from opti_network import opti_network
 from ssr_network import ssr_network
 
 class _Bridge(threading.Thread):
-    """A generic class which receives some data from optitrack and sends it
-       somewhere to the ssr
+    """An abstract class which receives some data from optitrack and sends some
+       other data to the ssr
     """
+    
+    __metaclass__ = ABCMeta
 
     def __init__(self, optitrack, ssr, data_limit=500, timeout=0.01, *args,
         **kwargs):
@@ -69,12 +72,14 @@ class _Bridge(threading.Thread):
    
     def stop(self):
         self._quit.set()  # fire event to stop execution 
-        
+    
+    @abstractmethod
     def _receive(self):
-        return _optitrack.get_packet
-   
+        return
+        
+    @abstractmethod
     def _send(self, packet):
-        print(packet)
+        return
         
 class HeadTracker(_Bridge):
     """A class for using the OptiTrack system as a head tracker for the SSR
@@ -90,10 +95,16 @@ class HeadTracker(_Bridge):
         self._ssr = ssr
         
     def _receive(self):
-        _ , _, angle = self._optitrack.get_rigid_body_orientation(self._rb_id, 
-            yaw_pitch_roll=True)
-        return angle
+        rigid_body = self._optitrack.get_rigid_body(self._rb_id)
+        # positions
+        pos = rigid_body.position
+        # yaw pitch roll angles
+        q = _Quaternion(rigid_body.orientation)
+        ypr = q.yaw_pitch_roll
+        #
+        return pos, ypr 
     
-    def _send(self, angle):
-        self._ssr.ref_orientation(angle*180/pi+90)
+    def _send(self, rigid_body):
+        _, ypr = rigid_body
+        self._ssr.ref_orientation(angle*180/pi)
 

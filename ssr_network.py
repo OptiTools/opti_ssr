@@ -55,6 +55,5 @@ class ssr_network:
         
     def ref_orientation(self, alpha):
         msg = '<request><reference><orientation azimuth="{0:4.2f}"/></reference></request>'.format(alpha)+self._end_message
-        print(msg.encode())
         self._s.send(msg.encode())
 

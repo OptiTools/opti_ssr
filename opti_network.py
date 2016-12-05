@@ -23,7 +23,7 @@ class opti_network:
             
     def get_rigid_body(self, rb_id):
         
-        packet = self.get_packet([rx.SenderData, rx.ModelDefs, rx.FrameOfData])g
+        packet = self.get_packet([rx.SenderData, rx.ModelDefs, rx.FrameOfData])
         return packet.rigid_bodies[rb_id]
 
     def get_rigid_body_position(self, rb_id):
@@ -54,17 +54,17 @@ class _Quaternion(pyquaternion.Quaternion):
             pitch:  rotation angle around the y'-axis in radians, in the range `[-pi/2, -pi/2]`
             roll:   rotation angle around the x''-axis in radians, in the range `[-pi, pi]` 
         
-        The resulting rotation_matrix would be R = R_x(roll) R_y(pitch) R_z(yaw)
+        The resulting rotation_matrix would be R = R_z(yaw) R_y(pitch) R_x(roll)
             
         Note: 
             This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
         """
         
         self._normalise()
-        yaw = np.arctan2(2*(self.q[0]*self.q[3] - self.q[1]*self.q[2]), 
+        yaw = np.arctan2(2*(self.q[0]*self.q[3] + self.q[1]*self.q[2]), 
             1 - 2*(self.q[2]**2 + self.q[3]**2))
-        pitch = np.arcsin(2*(self.q[0]*self.q[2] + self.q[3]*self.q[1]))
-        roll = np.arctan2(2*(self.q[0]*self.q[1] - self.q[2]*self.q[3]), 
+        pitch = np.arcsin(2*(self.q[0]*self.q[2] - self.q[3]*self.q[1]))
+        roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]), 
             1 - 2*(self.q[1]**2 + self.q[2]**2))
 
         return yaw, pitch, roll
