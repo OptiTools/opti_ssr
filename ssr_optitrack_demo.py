@@ -38,7 +38,7 @@ def demo(IP='139.30.207.123', port=4711, end_message='\0'):
     optitrack = opti_network()
     ssr = ssr_network(IP, port)
     ssr.src_creation(0)
-    headtracker = ssr_optitrack.HeadTracker(optitrack, ssr)
+    headtracker = ssr_optitrack.LocalWFS(optitrack, ssr)
     headtracker.start()
 
 if __name__ == "__main__":

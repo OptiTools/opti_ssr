@@ -20,7 +20,7 @@ class ssr_network:
     -------
     """
 
-    def __init__(self, ssr_ip='139.30.207.123', ssr_port=4711, end_message='/0'):
+    def __init__(self, ssr_ip='139.30.207.123', ssr_port=4711, end_message='\0'):
         self._ssr_ip = ssr_ip
         self._ssr_port = ssr_port
         self._end_message = end_message
