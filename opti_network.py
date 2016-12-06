@@ -19,7 +19,7 @@ class opti_network:
 
     def get_packet_data(self, packet_types=[rx.SenderData, rx.ModelDefs, rx.FrameOfData]):
         """
-        Connect to Optitrack system (by default, on the same machine) 
+        Connect to Optitrack system (by default, on the same machine)
         and receiving packet data from it.
 
         based on optirx-demo.py
@@ -44,6 +44,25 @@ class opti_network:
             if type(packet) in packet_types:
                 return packet
 
+    def get_rigid_body(self, rb_id=0):
+        """
+        Connect to Optitrack system and receiving rigid body position data from it.
+
+        Parameters
+        ----------
+        rb_id : int, optional
+            ID of the rigid body to receive data from.
+
+        Returns
+        -------
+
+
+        """
+        packet = self.get_packet_data()
+        rigid_body = packet.rigid_bodies[rb_id]
+        time_data = (packet.timestamp, packet.timecode, packet.latency)
+        return rigid_body, time_data
+
 
     def get_rigid_body_position(self, rb_id=0):
         """
@@ -59,10 +78,8 @@ class opti_network:
 
 
         """
-        packet = self.get_packet_data()
-        position = packet.rigid_bodies[rb_id].position
-        time_data = [packet.timestamp, packet.timecode, packet.latency]
-        return position, time_data
+        rigid_body, time_data = self.get_rigid_body(rb_id)
+        return rigid_body.position, time_data
 
     def get_rigid_body_orientation(self, rb_id=0):
         """
@@ -78,34 +95,48 @@ class opti_network:
 
 
         """
-        packet = self.get_packet_data()
-        # Motive quaternion orientation and time data output
-        q = _Quaternion(packet.rigid_bodies[rb_id].orientation)
-        time_data = [packet.timestamp, packet.timecode, packet.latency]
+        rigid_body, time_data = self.get_rigid_body(rb_id)
+        # Motive quaternion orientation
+        q = Quaternion(rigid_body.orientation)
         # Convert Motive quaternion output to euler angles and return it in addition to time data
         return q.yaw_pitch_roll, time_data
 
-
-class _Quaternion(pyquaternion.Quaternion):
+class Quaternion(pyquaternion.Quaternion):
+    """Work-around until pull request for original packages is accepted
+    https://github.com/KieranWynn/pyquaternion/pull/2
+    """
 
     @property
     def yaw_pitch_roll(self):
-        """Get the equivalent yaw-pitch-roll angles aka. intrinsic Tait-Bryan angles following the z-y'-x'' convention
+        """
+        Get the equivalent yaw-pitch-roll angles aka. intrinsic Tait-Bryan
+        angles following the z-y'-x'' convention
 
-        Returns:
-            yaw:    rotation angle around the z-axis in radians, in the range `[-pi, pi]`
-            pitch:  rotation angle around the y'-axis in radians, in the range `[-pi/2, -pi/2]`
-            roll:   rotation angle around the x''-axis in radians, in the range `[-pi, pi]` 
+        Returns
+        -------
+        yaw: double
+            rotation angle around the z-axis in radians, in the range
+            `[-pi, pi]`
+        pitch: double
+            rotation angle around the y'-axis in radians, in the range
+            `[-pi/2, -pi/2]`
+        roll: double
+            rotation angle around the x''-axis in radians, in the range
+            `[-pi, pi]`
 
-        Note: 
-            This feature only makes sense when referring to a unit quaternion. Calling this method will implicitly normalise the Quaternion object to a unit quaternion if it is not already one.
+        Note
+        ----
+        This feature only makes sense when referring to a unit quaternion.
+        Calling this method will implicitly normalise the Quaternion object
+        to a unit quaternion if it is not already one.
         """
 
         self._normalise()
-        yaw = np.arctan2(2*(self.q[0]*self.q[3] + self.q[1]*self.q[2]), 
+        yaw = np.arctan2(2*(self.q[0]*self.q[3] + self.q[1]*self.q[2]),
             1 - 2*(self.q[2]**2 + self.q[3]**2))
         pitch = np.arcsin(2*(self.q[0]*self.q[2] - self.q[3]*self.q[1]))
-        roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]), 
+        roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]),
             1 - 2*(self.q[1]**2 + self.q[2]**2))
 
         return yaw, pitch, roll
+

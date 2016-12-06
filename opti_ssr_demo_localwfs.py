@@ -7,15 +7,15 @@ Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [number of src] [array radius
 
 import sys
 
-from opti_network import opti_network
-from ssr_network import ssr_network
-from opti_ssr import ssr_localwfs
+import opti_network
+import ssr_network
+import opti_ssr
 
 # server IP, running the SSR
 # Mac IP/wall-e: 139.30.207.123
 # Debian IP: 139.30.207.218
 
-def opti_ssr_demo(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=None, multicast_address='239.255.42.99', opti_port=1511, end_message='\0'):
+def demo(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=None, multicast_address='239.255.42.99', opti_port=1511, end_message='\0'):
     """ #todo
 
     Parameters
@@ -53,15 +53,12 @@ def opti_ssr_demo(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=
         end_message = str(sys.argv[8])
 
     # instantiation of the necessary class objects
-    optitrack = opti_network(opti_ip, multicast_address, opti_port)
-    ssr = ssr_network(ssr_ip, ssr_port, end_message)
-    opti_ssr = ssr_localwfs(optitrack, ssr, N, R)
+    optitrack = opti_network.opti_network(opti_ip, multicast_address, opti_port)
+    ssr = ssr_network.ssr_network(ssr_ip, ssr_port, end_message)
+    localwfs = opti_ssr.LocalWFS(optitrack, ssr, N, R)
 
     # creating sources once and continuously tracking position
-    opti_ssr.create_src()
-    while True:
-        opti_ssr.src_pos_circular_array()
-    del opti_ssr
+    localwfs.start()
 
 if __name__ == "__main__":
-    opti_ssr_demo()
+    demo()

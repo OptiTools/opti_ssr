@@ -15,6 +15,9 @@ class ssr_network:
         Port of SSR Network Interface. By default, port = 4711.
     end_message : str, optional
         Symbol to terminate the XML messages send to SSR. By default, a binary zero.
+
+    Returns
+    -------
     """
 
     def __init__(self, ssr_ip='139.30.207.123', ssr_port=4711, end_message='\0'):
@@ -63,3 +66,5 @@ class ssr_network:
         Change orientation of an existing source in degrees (zero in positive x-direction).
         """
         orientation = '<request><source id="{0}"><orientation azimuth="{1}"/></source></request>'.format(src_id, alpha)+self._end_message
+        self._s.send(orientation.encode())
+
