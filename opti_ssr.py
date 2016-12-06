@@ -19,7 +19,7 @@ class _Bridge(threading.Thread):
        sends data to the ssr
     """
 
-    # Python 2 compatible way to declare abstract class
+    # Python2 compatible way to declare an abstract class
     __metaclass__ = ABCMeta
 
     def __init__(
@@ -45,9 +45,11 @@ class _Bridge(threading.Thread):
         # timeout
         self._timeout = timeout  # timeout in seconds
 
-    def get_last_data(self):
+    def get_last_data(self, num=None):
         """Returns a list of data received from the OptiTrack system."""
-        return self._data
+        if not num:
+            num = self._data_limit
+        return self._data[-num:]
 
     def clear_data(self):
         """Clears buffer"""
