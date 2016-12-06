@@ -46,7 +46,7 @@ class opti_network:
 
     def get_rigid_body(self, rb_id=0):
         """
-        Connect to Optitrack system and receiving rigid body position data from it.
+        Connect to Optitrack system and receiving rigid body data from it.
 
         Parameters
         ----------

@@ -2,7 +2,7 @@
 A python module for demonstrating listener tracking in local sound field synthesis.
 By default, a circular array of virtual point sources is placed around the listener.
 
-Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [end_message]
+Usage: python opti_ssr_demo_localwfs.py [SSR_IP] [SSR_port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [end_message]
 """
 
 import sys
@@ -15,7 +15,7 @@ import opti_ssr
 # Mac IP/wall-e: 139.30.207.123
 # Debian IP: 139.30.207.218
 
-def demo(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=None, multicast_address='239.255.42.99', opti_port=1511, end_message='\0'):
+def demo(ssr_ip='139.30.207.123', ssr_port=4711, ssr2_port=4712, N=64, R=1.00, opti_ip=None, multicast_address='239.255.42.99', opti_port=1511, end_message='\0'):
     """ #todo
 
     Parameters
@@ -40,22 +40,25 @@ def demo(ssr_ip='139.30.207.123', ssr_port=4711, N=64, R=1.00, opti_ip=None, mul
     if sys.argv[2:]:
         ssr_port = int(sys.argv[2])
     if sys.argv[3:]:
-        N = int(sys.argv[3])
+        ssr2_port = int(sys.argv[3])
     if sys.argv[4:]:
-        R = float(sys.argv[4])
+        N = int(sys.argv[4])
     if sys.argv[5:]:
-        opti_ip = str(sys.argv[5])
+        R = float(sys.argv[5])
     if sys.argv[6:]:
-        multicast_address = str(sys.argv[6])
+        opti_ip = str(sys.argv[6])
     if sys.argv[7:]:
-        opti_port = str(sys.argv[7])
+        multicast_address = str(sys.argv[7])
     if sys.argv[8:]:
-        end_message = str(sys.argv[8])
+        opti_port = str(sys.argv[8])
+    if sys.argv[9:]:
+        end_message = str(sys.argv[9])
 
     # instantiation of the necessary class objects
     optitrack = opti_network.opti_network(opti_ip, multicast_address, opti_port)
     ssr = ssr_network.ssr_network(ssr_ip, ssr_port, end_message)
-    localwfs = opti_ssr.LocalWFS(optitrack, ssr, N, R)
+    ssr2 = ssr_network.ssr_network(ssr_ip, ssr2_port, end_message)
+    localwfs = opti_ssr.LocalWFS(optitrack, ssr, ssr2, N, R)
 
     # creating sources once and continuously tracking position
     localwfs.start()
