@@ -2,7 +2,7 @@
 A python module for demonstrating listener tracking in local sound field synthesis.
 By default, a circular array of virtual point sources is placed around the listener.
 
-Usage: python opti_ssr.py [SSR_IP] [SSR_port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [end_message]
+Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [end_message]
 """
 
 import sys

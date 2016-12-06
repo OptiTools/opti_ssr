@@ -1,8 +1,6 @@
 """
 A python module for listener tracking in local sound field synthesis.
 By default, a circular array of virtual point sources is placed around the listener.
-
-Usage: python opti_ssr.py [SSR_IP] [SSR_port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [end_message]
 """
 
 from __future__ import print_function
@@ -36,8 +34,8 @@ class ssr_localwfs:
         # get position data from Motive
         x, y, z = self._optitrack.get_rigid_body_position()[0]
         # z-coordinate of Motive is the y-coordinate of the SSR
-        # evtl. -x
-        center = [x, y, 0]
+        # evtl. y und z tauschen?
+        center = [x, z, 0]
 
         # calculation of source positions in a circular array
         alpha = np.linspace(0, 2 * np.pi, self._N, endpoint=False)
