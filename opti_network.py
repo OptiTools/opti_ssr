@@ -60,7 +60,7 @@ class opti_network:
         """
         packet = self.get_packet_data()
         rigid_body = packet.rigid_bodies[rb_id]
-        time_data = [packet.timestamp, packet.timecode, packet.latency]
+        time_data = (packet.timestamp, packet.timecode, packet.latency)
         return rigid_body, time_data
 
 
@@ -96,9 +96,8 @@ class opti_network:
 
         """
         rigid_body, time_data = self.get_rigid_body(rb_id)
-        # Motive quaternion orientation and time data output
+        # Motive quaternion orientation
         q = Quaternion(rigid_body.orientation)
-        time_data = [packet.timestamp, packet.timecode, packet.latency]
         # Convert Motive quaternion output to euler angles and return it in addition to time data
         return q.yaw_pitch_roll, time_data
 
@@ -139,5 +138,5 @@ class Quaternion(pyquaternion.Quaternion):
         roll = np.arctan2(2*(self.q[0]*self.q[1] + self.q[2]*self.q[3]),
             1 - 2*(self.q[1]**2 + self.q[2]**2))
 
-        return [yaw, pitch, roll]
+        return yaw, pitch, roll
 
