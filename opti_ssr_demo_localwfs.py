@@ -33,22 +33,25 @@ def demo(ssr_ip='localhost', ssr_port=4711, N=64, R=1.00, opti_unicast_ip=None, 
     if sys.argv[2:]:
         ssr_port = int(sys.argv[2])
     if sys.argv[3:]:
-        N = int(sys.argv[3])
+        ssr2_port = int(sys.argv[3])
     if sys.argv[4:]:
-        R = float(sys.argv[4])
+        N = int(sys.argv[4])
     if sys.argv[5:]:
-        opti_unicast_ip = str(sys.argv[5])
+        R = float(sys.argv[5])
     if sys.argv[6:]:
-        opti_multicast_ip = str(sys.argv[6])
+        opti_unicast_ip = str(sys.argv[6])
     if sys.argv[7:]:
-        opti_port = str(sys.argv[7])
+        opti_multicast_ip = str(sys.argv[7])
     if sys.argv[8:]:
-        ssr_end_message = str(sys.argv[8])
+        opti_port = str(sys.argv[8])
+    if sys.argv[9:]:
+        ssr_end_message = str(sys.argv[9])
 
     # instantiation of the necessary class objects
     optitrack = opti_ssr.OptiTrackClient(opti_unicast_ip, opti_multicast_ip, opti_port)
     ssr = opti_ssr.SSRClient(ssr_ip, ssr_port, ssr_end_message)
-    localwfs = opti_ssr.LocalWFS(optitrack, ssr, N, R)
+    ssr2 = opti_ssr.SSRClient(ssr_ip, ssr2_port, ssr_end_message)
+    localwfs = opti_ssr.LocalWFS(optitrack, ssr, ssr2, N, R)
 
     # creating sources once and continuously tracking position
     localwfs.start()

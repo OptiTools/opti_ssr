@@ -111,15 +111,25 @@ class HeadTracker(_Bridge):
 
 class LocalWFS(_Bridge):
     """
-    #TODO
+    #A class for using the OptiTrack system to track the listener position 
+    in the SSR for local sound field synthesis.
+
+    The first SSR instance shifts a circular point source array 
+    placed around the listener in relation to the real reproduction setup.
+
+    The second SSR instance shifts the reference position of aforementioned point sources
+    as the virtual reproduction setup in relation to the real sources based on audio files.
     """
-    def __init__(self, optitrack, ssr, N=64, R=1.00, rb_id=0, *args, **kwargs):
+    def __init__(self, optitrack, ssr, ssr2, N=64, R=1.00, rb_id=0, *args, **kwargs):
         # call contructor of super class
         super(LocalWFS, self).__init__(optitrack, ssr, *args, **kwargs)
         # selects which rigid body from OptiTrack is the tracker
         self._rb_id = rb_id
         self._N = N
         self._R = R
+
+        # second ssr instance
+        self._ssr2 = ssr2
 
         self._create_virtual_sources()
 
@@ -146,4 +156,4 @@ class LocalWFS(_Bridge):
         # sending position data to SSR; number of source id depends on number of existing sources
         for src_id in range(1, self._N+1):
             self._ssr.set_src_position(src_id, src_pos[src_id-1, 0], src_pos[src_id-1, 1])
-
+            self._ssr2.set_ref_position(center[0], center[1])
