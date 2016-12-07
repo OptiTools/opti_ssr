@@ -4,18 +4,18 @@ and receiving data, including rigid-body position and orientation, from it.
 By default, it connects to Optitrack software Motive on the same machine.
 """
 
-import optirx as rx
+from . import optirx as rx
 import numpy as np
 import pyquaternion  # for handling quaternions
 
-class opti_network:
+class OptiTrackClient:
     """
     #TODO
     """
 
-    def __init__(self, opti_ip=None, multicast_address="239.255.42.99", opti_port=1511, NatNet_version=(3, 0, 0, 0)):
-        self._dsock = rx.mkdatasock(ip_address=opti_ip, multicast_address=multicast_address, port=opti_port)
-        self._NatNet_version = NatNet_version
+    def __init__(self, unicast_ip=None, multicast_ip="239.255.42.99", port=1511, natnet_version=(3, 0, 0, 0)):
+        self._dsock = rx.mkdatasock(ip_address=unicast_ip, multicast_address=multicast_ip, port=port)
+        self._natnet_version = natnet_version
 
     def get_packet_data(self, packet_types=[rx.SenderData, rx.ModelDefs, rx.FrameOfData]):
         """
@@ -37,11 +37,8 @@ class opti_network:
         """
         while True:
             data = self._dsock.recv(rx.MAX_PACKETSIZE)
-            packet = rx.unpack(data, version=self._NatNet_version)
-            if type(packet) is rx.SenderData:
-                version = packet.natnet_version
-                print("NatNet version received:", version)
-            if type(packet) in packet_types:
+            packet = rx.unpack(data, version=self._natnet_version)
+            if not packet_types or type(packet) in packet_types:
                 return packet
 
     def get_rigid_body(self, rb_id=0):

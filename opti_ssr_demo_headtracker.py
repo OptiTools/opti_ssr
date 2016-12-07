@@ -6,12 +6,9 @@ Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [optitrack ip] [multicast add
 """
 
 import sys
-
-import opti_network
-import ssr_network
 import opti_ssr
 
-def demo(ssr_ip='139.30.207.123', ssr_port=4711, opti_ip=None, multicast_address='239.255.42.99', opti_port=1511, end_message='\0'):
+def demo(ssr_ip='localhost', ssr_port=4711, opti_unicast_ip=None, opti_multicast_ip='239.255.42.99', opti_port=1511, ssr_end_message='\0'):
     """ #todo
 
     Parameters
@@ -30,21 +27,21 @@ def demo(ssr_ip='139.30.207.123', ssr_port=4711, opti_ip=None, multicast_address
     if sys.argv[2:]:
         ssr_port = int(sys.argv[2])
     if sys.argv[3:]:
-        opti_ip = str(sys.argv[3])
+        opti_unicast_ip = str(sys.argv[3])
     if sys.argv[4:]:
-        multicast_address = str(sys.argv[4])
+        opti_multicast_ip = str(sys.argv[4])
     if sys.argv[5:]:
         opti_port = str(sys.argv[5])
     if sys.argv[6:]:
-        end_message = str(sys.argv[6])
+        ssr_end_message = str(sys.argv[6])
 
     # instantiation of the necessary class objects
-    optitrack = opti_network.opti_network(opti_ip, multicast_address, opti_port)
-    ssr = ssr_network.ssr_network(ssr_ip, ssr_port, end_message)
-    localwfs = opti_ssr.HeadTracker(optitrack, ssr)
+    optitrack = opti_ssr.OptiTrackClient(opti_unicast_ip, opti_multicast_ip, opti_port)
+    ssr = opti_ssr.SSRClient(ssr_ip, ssr_port, ssr_end_message)
+    headtracker = opti_ssr.HeadTracker(optitrack, ssr)
 
-    # creating sources once and continuously tracking position
-    localwfs.start()
+    # continuous tracking of head orientation
+    headtracker.start()
 
 if __name__ == "__main__":
     demo()

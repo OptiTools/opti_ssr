@@ -4,7 +4,7 @@ A module to establish a TCP/IP4 network connection and send XML messages to comm
 from __future__ import print_function
 import socket
 
-class ssr_network:
+class SSRClient:
     """ A class to establish a TCP/IP4 network connection and send XML messages to communicate with SSR.
 
     Attributes
@@ -20,14 +20,14 @@ class ssr_network:
     -------
     """
 
-    def __init__(self, ssr_ip='139.30.207.123', ssr_port=4711, end_message='\0'):
-        self._ssr_ip = ssr_ip
-        self._ssr_port = ssr_port
+    def __init__(self, ip='localhost', port=4711, end_message='\0'):
+        self._ip = ip
+        self._port = port
         self._end_message = end_message
 
         #IP4 and TCP connection
         self._s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self._s.connect((self._ssr_ip, self._ssr_port))
+        self._s.connect((self._ip, self._port))
 
     def __del__(self):
         self._s.close()
