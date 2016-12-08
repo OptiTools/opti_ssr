@@ -56,47 +56,12 @@ class OptiTrackClient:
 
         """
         packet = self.get_packet_data()
-        rigid_body = packet.rigid_bodies[rb_id]
+
+        position = np.array(packet.rigid_bodies[rb_id].position)
+        orientation = Quaternion(packet.rigid_bodies[rb_id].orientation).unit
         time_data = (packet.timestamp, packet.timecode, packet.latency)
-        return rigid_body, time_data
 
-
-    def get_rigid_body_position(self, rb_id=0):
-        """
-        Connect to Optitrack system and receiving rigid body position data from it.
-
-        Parameters
-        ----------
-        rb_id : int, optional
-            ID of the rigid body to receive data from.
-
-        Returns
-        -------
-
-
-        """
-        rigid_body, time_data = self.get_rigid_body(rb_id)
-        return rigid_body.position, time_data
-
-    def get_rigid_body_orientation(self, rb_id=0):
-        """
-        Connect to Optitrack system and receiving rigid body orientation data from it.
-
-        Parameters
-        ----------
-        rb_id : int, optional
-            ID of the rigid body to receive data from.
-
-        Returns
-        -------
-
-
-        """
-        rigid_body, time_data = self.get_rigid_body(rb_id)
-        # Motive quaternion orientation
-        q = Quaternion(rigid_body.orientation)
-        # Convert Motive quaternion output to euler angles and return it in addition to time data
-        return q.yaw_pitch_roll, time_data
+        return position, orientation, time_data
 
 class Quaternion(pyquaternion.Quaternion):
     """Work-around until pull request for original packages is accepted

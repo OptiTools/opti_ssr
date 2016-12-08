@@ -94,16 +94,28 @@ class HeadTracker(_Bridge):
         super(HeadTracker, self).__init__(optitrack, ssr, *args, **kwargs)
         # selects which rigid body from OptiTrack is the head tracker
         self._rb_id = rb_id
+        # origin and orientation of world coordinate system
+        self._origin = np.array((0, 0, 0))
+        self._orientation = Quaternion(1, 0, 0, 0)
+
+    def calibrate(self):
+        """
+        Use current position and orientation of head tracker to set the origin
+        and orientation of the world coordinate system
+
+        Returns
+        -------
+
+        """
+        self._origin, self._orientation,_ = self._optitrack.get_rigid_body(self._rb_id)
 
     def _receive(self):
-        rigid_body, time_data = self._optitrack.get_rigid_body(self._rb_id)
-        # position
-        pos = rigid_body.position
-        # yaw-pitch-roll angles
-        q = Quaternion(rigid_body.orientation)
-        ypr = q.yaw_pitch_roll
-        # rigid_body
-        return pos, ypr, time_data
+        pos, ori, time_data = self._optitrack.get_rigid_body(self._rb_id)
+        # apply coordinate transform
+        pos = pos - self._origin
+        ori = self._orientation.conjugate * ori  # not commutative
+
+        return pos, ori.yaw_pitch_roll, time_data
 
     def _send(self, data):
         _, ypr, _ = data  # (pos, ypr, time_data)
@@ -111,10 +123,10 @@ class HeadTracker(_Bridge):
 
 class LocalWFS(_Bridge):
     """
-    #A class for using the OptiTrack system to track the listener position 
+    #A class for using the OptiTrack system to track the listener position
     in the SSR for local sound field synthesis.
 
-    The first SSR instance shifts a circular point source array 
+    The first SSR instance shifts a circular point source array
     placed around the listener in relation to the real reproduction setup.
 
     The second SSR instance shifts the reference position of aforementioned point sources
@@ -142,7 +154,7 @@ class LocalWFS(_Bridge):
 
     def _receive(self):
         # get position data of rigid body from OptiTrack system
-        center, _ = self._optitrack.get_rigid_body_position()
+        center, _, _ = self._optitrack.get_rigid_body()
 
         return center
 
