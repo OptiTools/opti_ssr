@@ -11,8 +11,7 @@ from time import sleep
 import numpy as np
 from abc import ABCMeta, abstractmethod # for abstract classes and methods
 
-import opti_network
-from ssr_network import ssr_network
+from .opti_client import Quaternion
 
 class _Bridge(threading.Thread):
     """An abstract class which receives data from the optitrack system and
@@ -101,7 +100,7 @@ class HeadTracker(_Bridge):
         # position
         pos = rigid_body.position
         # yaw-pitch-roll angles
-        q = opti_network.Quaternion(rigid_body.orientation)
+        q = Quaternion(rigid_body.orientation)
         ypr = q.yaw_pitch_roll
         # rigid_body
         return pos, ypr, time_data
