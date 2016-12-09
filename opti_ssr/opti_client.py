@@ -58,7 +58,7 @@ class OptiTrackClient:
         packet = self.get_packet_data()
 
         position = np.array(packet.rigid_bodies[rb_id].position)
-        orientation = Quaternion(packet.rigid_bodies[rb_id].orientation).unit
+        orientation = Quaternion(packet.rigid_bodies[rb_id].orientation)
         time_data = (packet.timestamp, packet.timecode, packet.latency)
 
         return position, orientation, time_data
