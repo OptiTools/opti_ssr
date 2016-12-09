@@ -4,7 +4,7 @@ and receiving data, including rigid-body position and orientation, from it.
 By default, it connects to Optitrack software Motive on the same machine.
 """
 
-from . import optirx as rx
+import optirx as rx
 import numpy as np
 import pyquaternion  # for handling quaternions
 
@@ -14,6 +14,11 @@ class OptiTrackClient:
     """
 
     def __init__(self, unicast_ip=None, multicast_ip="239.255.42.99", port=1511, natnet_version=(3, 0, 0, 0)):
+        
+        # WORKAROUND for bug in optirx
+        if not unicast_ip:
+            unicast_ip = ''
+        
         self._dsock = rx.mkdatasock(ip_address=unicast_ip, multicast_address=multicast_ip, port=port)
         self._natnet_version = natnet_version
 
