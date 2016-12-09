@@ -7,8 +7,7 @@ setup(
     packages=['opti_ssr'],
     install_requires=[
         'numpy',
-        'pyquaternion',
-        'optirx'
+        'pyquaternion'
     ],
     author = "Opti-SSR developers",
     author_email = "fiete.winter@gmail.com",
