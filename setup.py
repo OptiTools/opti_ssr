@@ -5,7 +5,11 @@ setup(
     name = "opti_ssr",
     version = "0.0.4",
     packages=['opti_ssr'],
-    author = "Felix Immohr, Fiete Winter, Sergey Astanin",
+    install_requires=[
+        'numpy',
+        'pyquaternion'
+    ],
+    author = "Opti-SSR developers",
     author_email = "fiete.winter@gmail.com",
     description = ("Using the OptiTrack system for different applications "
                     "of the SoundScape Renderer"),

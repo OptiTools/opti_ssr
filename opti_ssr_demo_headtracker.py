@@ -7,6 +7,7 @@ Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [optitrack ip] [multicast add
 
 import sys
 import opti_ssr
+from time import sleep
 
 def demo(ssr_ip='localhost', ssr_port=4711, opti_unicast_ip=None, opti_multicast_ip='239.255.42.99', opti_port=1511, ssr_end_message='\0'):
     """ #todo
@@ -49,6 +50,10 @@ def demo(ssr_ip='localhost', ssr_port=4711, opti_unicast_ip=None, opti_multicast
 
     # continuous tracking of head orientation
     headtracker.start()
+    #
+    sleep(5)
+    #
+    headtracker.calibrate()
 
 if __name__ == "__main__":
     demo()

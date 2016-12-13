@@ -72,66 +72,12 @@ class OptiTrackClient:
 
         """
         packet = self.get_packet_data()
-        rigid_body = packet.rigid_bodies[rb_id]
-        time_data = (packet.timestamp, packet.timecode, packet.latency)
-        return rigid_body, time_data
 
+        position = np.array(packet.rigid_bodies[rb_id].position)
+        orientation = Quaternion(packet.rigid_bodies[rb_id].orientation)
+        time_data = (packet.frameno, packet.timestamp, packet.latency)
 
-    def get_rigid_body_position(self, rb_id=0):
-        """
-        Connect to Optitrack system and receive rigid body position and time data from it.
-
-        Parameters
-        ----------
-        rb_id : int, optional
-            ID of the rigid body to receive data from.
-
-        Returns
-        -------
-        x : int
-            X coordinate of the desired rigid body in Motive`s coordinate system.
-        y : int
-            Y coordinate of the desired rigid body in Motive`s coordinate system.
-        z : int
-            Z coordinate of the desired rigid body in Motive`s coordinate system.
-        time_data : list
-            List of time data consisting of timestamp, timecode and latency packet data.
-
-        """
-        rigid_body, time_data = self.get_rigid_body(rb_id)
-        return rigid_body.position, time_data
-
-    def get_rigid_body_orientation(self, rb_id=0):
-        """
-        Connect to Optitrack system and receive rigid body orientation and time data from it.
-        The quarternion output of the Motive software is converted into intrinsic Tait-Bryan angles.
-
-        Parameters
-        ----------
-        rb_id : int, optional
-            ID of the rigid body to receive data from.
-
-        Returns
-        -------
-        yaw : double
-            
-            Rotation angle around the z-axis in radians, in the range
-            `[-pi, pi]`
-        pitch : double
-            Rotation angle around the y'-axis in radians, in the range
-            `[-pi/2, -pi/2]`
-        roll : double
-            Rotation angle around the x''-axis in radians, in the range
-            `[-pi, pi]`
-        time_data : list
-            List of time data consisting of timestamp, timecode and latency packet data.
-
-        """
-        rigid_body, time_data = self.get_rigid_body(rb_id)
-        # Motive quaternion orientation
-        q = Quaternion(rigid_body.orientation)
-        # Convert Motive quaternion output to euler angles and return it in addition to time data
-        return q.yaw_pitch_roll, time_data
+        return position, orientation, time_data
 
 class Quaternion(pyquaternion.Quaternion):
     """Work-around until pull request for original packages is accepted
