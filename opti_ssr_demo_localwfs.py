@@ -2,27 +2,42 @@
 A python module for demonstrating listener tracking in local sound field synthesis.
 By default, a circular array of virtual point sources is placed around the listener.
 
+To accomplish the listener tracking two instances of the SoundScape Renderer are necessary.
+
+The first SSR instance shifts a circular point source array 
+placed around the listener in relation to the real reproduction setup.
+
+The second SSR instance shifts the reference position of aforementioned point sources
+as the virtual reproduction setup in relation to the real sources based on audio files.
+
 Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [ssr end message]
 """
 
 import sys
 import opti_ssr
 
-def demo(ssr_ip='localhost', ssr_port=4711, N=64, R=1.00, opti_unicast_ip=None, opti_multicast_ip='239.255.42.99', opti_port=1511, ssr_end_message='\0'):
-    """ #todo
+def demo(ssr_ip='localhost', ssr_port=4711, ssr2_port=4712, N=64, R=1.00, opti_unicast_ip=None, opti_multicast_ip='239.255.42.99', opti_port=1511, ssr_end_message='\0'):
+    """ A demo function to track the listener position.
 
     Parameters
     ----------
-    IP : str, optional
+    ssr_ip : str, optional
         IP of the server running thr SSR.
-    port : int, optional
-        Port of SSR Network Interface. By default, port = 4711.
-    buffer : int, optional
-        Buffersize. By default, buffersize = 1024.
+    ssr_port : int, optional
+        Port of SSR Network Interface. By default, port 4711.
+    ssr2_port : int, optional
+        Port of SSR Network Interface. By default, port 4712.
     N : int, optional
-        Number of Sources. By default, 12 sources.
+        Number of Sources. By default, 64 sources.
     R : float, optional
         Radius of circular source array in meter. By default, 1m.
+    opti_unicast_ip : str, optional
+        IP of the Motive software to establish a unicast connection to.
+        By default, no unicast connection is established.
+    opti_multicast_ip : str, optional
+        Multicast address to connect to.
+    opti_port : int, optional
+        Port of the Motive network interface.
     ssr_end_message : str, optional
         Symbol to terminate the XML messages send to SSR. By default, a binary zero.
 

@@ -1,6 +1,8 @@
 """
-A python module for listener tracking inside the SoundScape Renderer using
-the OptiTrack optical tracking system.
+A python module that provides tools for position and orientation tracking
+inside the SoundScape Renderer (SSR) using the OptiTrack optical tracking system.
+
+Since both  classes 'HeadTracker' and 'LocalWFS' are subclasses of the abstract class _Bridge,
 """
 
 from __future__ import print_function
@@ -14,8 +16,10 @@ from abc import ABCMeta, abstractmethod # for abstract classes and methods
 from .opti_client import Quaternion
 
 class _Bridge(threading.Thread):
-    """An abstract class which receives data from the optitrack system and
-       sends data to the ssr
+    """An abstract class which implements a multithreading approach to receive data 
+       from the optitrack system and send data to the SSR.
+       To implement functionality to send and receive the desired data, 
+       subclasses need to define the functions _receive and _send.
     """
 
     # Python2 compatible way to declare an abstract class
@@ -86,7 +90,7 @@ class _Bridge(threading.Thread):
         return
 
 class HeadTracker(_Bridge):
-    """A class for using the OptiTrack system as a head tracker for the SSR
+    """A class for using the OptiTrack system as a head tracker for the SSR.
     """
 
     def __init__(self, optitrack, ssr, rb_id=0, *args, **kwargs):
@@ -111,7 +115,7 @@ class HeadTracker(_Bridge):
 
 class LocalWFS(_Bridge):
     """
-    #A class for using the OptiTrack system to track the listener position 
+    A class for using the OptiTrack system to track the listener position 
     in the SSR for local sound field synthesis.
 
     The first SSR instance shifts a circular point source array 
@@ -119,8 +123,23 @@ class LocalWFS(_Bridge):
 
     The second SSR instance shifts the reference position of aforementioned point sources
     as the virtual reproduction setup in relation to the real sources based on audio files.
+
+     Attributes
+    ----------
+    optitrack : class object
+        IP of the server running thr SSR. By default, it connects to localhost.
+    ssr : class object
+        First SSR instance.
+    ssr_virt_repr : class object
+        Second SSR instance.
+    N : int
+        Number of Sources.
+    R : float
+        Radius of circular source array in meter.
+    rb_id : int, optional
+        ID of the rigid body to receive data from.
     """
-    def __init__(self, optitrack, ssr, ssr2, N=64, R=1.00, rb_id=0, *args, **kwargs):
+    def __init__(self, optitrack, ssr, ssr_virt_repr, N, R, rb_id=0, *args, **kwargs):
         # call contructor of super class
         super(LocalWFS, self).__init__(optitrack, ssr, *args, **kwargs)
         # selects which rigid body from OptiTrack is the tracker
@@ -128,14 +147,14 @@ class LocalWFS(_Bridge):
         self._N = N
         self._R = R
 
-        # second ssr instance
-        self._ssr2 = ssr2
+        # second ssr instance feat. virtual sources as reproduction setup
+        self._ssr_virt_repr = ssr_virt_repr
 
         self._create_virtual_sources()
 
     def _create_virtual_sources(self):
         """
-        Creating a specified amount of new sources via network connection to the SSR.
+        Create a specified amount of new sources via network connection to the SSR.
         """
         for src_id in range(1, self._N+1):
             self._ssr.src_creation(src_id)
@@ -156,4 +175,4 @@ class LocalWFS(_Bridge):
         # sending position data to SSR; number of source id depends on number of existing sources
         for src_id in range(1, self._N+1):
             self._ssr.set_src_position(src_id, src_pos[src_id-1, 0], src_pos[src_id-1, 1])
-            self._ssr2.set_ref_position(center[0], center[1])
+            self._ssr_virt_repr.set_ref_position(center[0], center[1])

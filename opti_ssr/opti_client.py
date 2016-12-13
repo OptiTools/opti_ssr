@@ -10,7 +10,19 @@ import pyquaternion  # for handling quaternions
 
 class OptiTrackClient:
     """
-    #TODO
+    A class to connect to Optitrack systems and Motive software and receive data from it.
+
+    Attributes
+    ----------
+    unicast_ip : str, optional
+        IP of the Motive software to establish a unicast connection to.
+        By default, no unicast connection is established.
+    multicast_ip : str, optional
+        Multicast address to connect to.
+    port : int, optional
+        Port of the Motive network interface.
+    natnet_version : tuple, optional
+        Version number of the NatNetSDK to use.
     """
 
     def __init__(self, unicast_ip=None, multicast_ip="239.255.42.99", port=1511, natnet_version=(3, 0, 0, 0)):
@@ -20,7 +32,7 @@ class OptiTrackClient:
     def get_packet_data(self, packet_types=[rx.SenderData, rx.ModelDefs, rx.FrameOfData]):
         """
         Connect to Optitrack system (by default, on the same machine)
-        and receiving packet data from it.
+        and receive packet data from it.
 
         based on optirx-demo.py
         source: https://bitbucket.org/astanin/python-optirx
@@ -28,11 +40,12 @@ class OptiTrackClient:
         Parameters
         ----------
         packet_types : list, optional
-            types of the packets to be returned
+            Types of the packets to be returned.
 
         Returns
         -------
-
+        packet : list
+            Received packets of desired type.
 
         """
         while True:
@@ -43,7 +56,7 @@ class OptiTrackClient:
 
     def get_rigid_body(self, rb_id=0):
         """
-        Connect to Optitrack system and receiving rigid body data from it.
+        Connect to Optitrack system and receive complete rigid body data from it.
 
         Parameters
         ----------
@@ -52,7 +65,10 @@ class OptiTrackClient:
 
         Returns
         -------
-
+        rigid_body : list
+            Complete rigid body packet data of the desired rigid body.
+        time_data : list
+            List of time data consisting of timestamp, timecode and latency packet data.
 
         """
         packet = self.get_packet_data()
@@ -63,7 +79,7 @@ class OptiTrackClient:
 
     def get_rigid_body_position(self, rb_id=0):
         """
-        Connect to Optitrack system and receiving rigid body position data from it.
+        Connect to Optitrack system and receive rigid body position and time data from it.
 
         Parameters
         ----------
@@ -72,7 +88,14 @@ class OptiTrackClient:
 
         Returns
         -------
-
+        x : int
+            X coordinate of the desired rigid body in Motive`s coordinate system.
+        y : int
+            Y coordinate of the desired rigid body in Motive`s coordinate system.
+        z : int
+            Z coordinate of the desired rigid body in Motive`s coordinate system.
+        time_data : list
+            List of time data consisting of timestamp, timecode and latency packet data.
 
         """
         rigid_body, time_data = self.get_rigid_body(rb_id)
@@ -80,7 +103,8 @@ class OptiTrackClient:
 
     def get_rigid_body_orientation(self, rb_id=0):
         """
-        Connect to Optitrack system and receiving rigid body orientation data from it.
+        Connect to Optitrack system and receive rigid body orientation and time data from it.
+        The quarternion output of the Motive software is converted into intrinsic Tait-Bryan angles.
 
         Parameters
         ----------
@@ -89,7 +113,18 @@ class OptiTrackClient:
 
         Returns
         -------
-
+        yaw : double
+            
+            Rotation angle around the z-axis in radians, in the range
+            `[-pi, pi]`
+        pitch : double
+            Rotation angle around the y'-axis in radians, in the range
+            `[-pi/2, -pi/2]`
+        roll : double
+            Rotation angle around the x''-axis in radians, in the range
+            `[-pi, pi]`
+        time_data : list
+            List of time data consisting of timestamp, timecode and latency packet data.
 
         """
         rigid_body, time_data = self.get_rigid_body(rb_id)

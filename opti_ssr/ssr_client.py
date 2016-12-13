@@ -1,23 +1,23 @@
 """
-A module to establish a TCP/IP4 network connection and send XML messages to communicate with SSR.
+A python module to establish a TCP/IP4 network connection and send XML messages
+to communicate with the SoundScape Renderer.
 """
 from __future__ import print_function
 import socket
 
 class SSRClient:
-    """ A class to establish a TCP/IP4 network connection and send XML messages to communicate with SSR.
+    """
+    A class to establish a TCP/IP4 network connection and send XML messages
+    to communicate with the SoundScape Renderer.
 
     Attributes
     ----------
-    IP : str, optional
-        IP of the server running thr SSR.
+    ip : str, optional
+        IP of the server running thr SSR. By default, it connects to localhost.
     port : int, optional
         Port of SSR Network Interface. By default, port = 4711.
     end_message : str, optional
         Symbol to terminate the XML messages send to SSR. By default, a binary zero.
-
-    Returns
-    -------
     """
 
     def __init__(self, ip='localhost', port=4711, end_message='\0'):
@@ -31,7 +31,7 @@ class SSRClient:
 
     def __del__(self):
         self._s.close()
-        print("ssr_network: socket closed")
+        print("SSRClient: socket closed")
 
     def src_creation(self, src_id):
         """
