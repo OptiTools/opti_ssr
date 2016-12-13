@@ -52,10 +52,10 @@ class _Bridge(threading.Thread):
 
     def clear_data(self):
         """Clears buffer"""
-        if self._packet_available.is_set():
+        if self._data_available.is_set():
             with self._data_lock:  # lock the mutex
-                self._packet_data = []
-                self._packet_available.clear()
+                self._data = []
+                self._data_available.clear()
 
     def run(self):
         while not self._quit.is_set():
