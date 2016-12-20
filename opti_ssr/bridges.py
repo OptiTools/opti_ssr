@@ -169,7 +169,7 @@ class LocalWFS(_Bridge):
         # second ssr instance feat. virtual sources as reproduction setup
         self._ssr_virt_repr = ssr_virt_repr
 
-        self._create_virtual_sources()
+        # self._create_virtual_sources()
 
     def _create_virtual_sources(self):
         """Create a specified amount of new sources via network connection to the SSR.
@@ -203,3 +203,5 @@ class LocalWFS(_Bridge):
         for src_id in range(1, self._N+1):
             self._ssr.set_src_position(src_id, src_pos[src_id-1, 0], src_pos[src_id-1, 1])
             self._ssr_virt_repr.set_ref_position(center[0], center[1])
+        # sleep(0.1)
+
