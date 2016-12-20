@@ -1,13 +1,12 @@
 """
-A python module to establish a TCP/IP4 network connection and send XML messages
-to communicate with the SoundScape Renderer.
+A python module for controlling the SoundScape Renderer.
 """
 from __future__ import print_function
 import socket
 
 class SSRClient:
     """
-    A class to establish a TCP/IP4 network connection and send XML messages
+    Establish a TCP/IP4 network connection and send XML messages
     to communicate with the SoundScape Renderer.
 
     Attributes

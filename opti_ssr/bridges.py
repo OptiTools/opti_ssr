@@ -2,7 +2,8 @@
 A python module that provides tools for position and orientation tracking
 inside the SoundScape Renderer (SSR) using the OptiTrack optical tracking system.
 
-Since both  classes 'HeadTracker' and 'LocalWFS' are subclasses of the abstract class _Bridge,
+In any subclass of the abstract class _Bridge
+the functions to receive and send data need to be defined.
 """
 
 from __future__ import print_function
@@ -17,8 +18,8 @@ from .opti_client import Quaternion
 
 class _Bridge(threading.Thread):
     """An abstract class which implements a multithreading approach to receive data 
-       from the optitrack system and send data to the SSR.
-       To implement functionality to send and receive the desired data, 
+       from the optitrack system and send data to the SSR simultaneously.
+       To implement the functionality to send and receive the desired data, 
        subclasses need to define the functions _receive and _send.
     """
 
@@ -90,7 +91,17 @@ class _Bridge(threading.Thread):
         return
 
 class HeadTracker(_Bridge):
-    """A class for using the OptiTrack system as a head tracker for the SSR.
+    """
+    A class for using the OptiTrack system as a head tracker for the SSR.
+
+    Attributes
+    ----------
+    optitrack : class object
+        Object of class OptiTrackClient.
+    ssr : class object
+        Object of class SSRClient.
+    rb_id : int, optional
+        ID of the rigid body to receive data from.
     """
 
     def __init__(self, optitrack, ssr, rb_id=0, *args, **kwargs):
@@ -105,11 +116,7 @@ class HeadTracker(_Bridge):
     def calibrate(self):
         """
         Use current position and orientation of head tracker to set the origin
-        and orientation of the world coordinate system
-
-        Returns
-        -------
-
+        and orientation of the world coordinate system.
         """
         self._origin, self._orientation,_ = self._optitrack.get_rigid_body(self._rb_id)
 
@@ -130,20 +137,20 @@ class LocalWFS(_Bridge):
     A class for using the OptiTrack system to track the listener position 
     in the SSR for local sound field synthesis.
 
-    The first SSR instance shifts a circular point source array 
+    The first SSR instance (ssr) shifts a circular point source array 
     placed around the listener in relation to the real reproduction setup.
 
-    The second SSR instance shifts the reference position of aforementioned point sources
+    The second SSR instance (ssr_virt_repr) shifts the reference position of aforementioned point sources
     as the virtual reproduction setup in relation to the real sources based on audio files.
 
     Attributes
     ----------
     optitrack : class object
-        IP of the server running thr SSR. By default, it connects to localhost.
+        Object of the class OptiTrackClient.
     ssr : class object
-        First SSR instance.
+        First SSR instance as object of class SSRClient.
     ssr_virt_repr : class object
-        Second SSR instance.
+        Second SSR instance as object of the class SSRClient.
     N : int
         Number of Sources.
     R : float
@@ -165,20 +172,28 @@ class LocalWFS(_Bridge):
         self._create_virtual_sources()
 
     def _create_virtual_sources(self):
-        """
-        Create a specified amount of new sources via network connection to the SSR.
+        """Create a specified amount of new sources via network connection to the SSR.
         """
         for src_id in range(1, self._N+1):
             self._ssr.src_creation(src_id)
 
     def _receive(self):
-        # get position data of rigid body from OptiTrack system
+        """Get position data of rigid body from OptiTrack system
+        
+        Returns
+        -------
+        center : list
+            Rigid body position data.
+            Consists of x, y, z coordinates of Motive`s coordinate system.
+        """
         center, _, _ = self._optitrack.get_rigid_body()
 
         return center
 
     def _send(self, center):
-        # calculation of source positions in a circular array
+        """Send source and reference position data to SSR.
+           Calculation of source positions in a circular array.
+        """
         alpha = np.linspace(0, 2 * np.pi, self._N, endpoint=False)
         src_pos = np.zeros((self._N, len(center)))
         src_pos[:, 0] = self._R * np.cos(alpha)

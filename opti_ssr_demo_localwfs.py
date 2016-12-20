@@ -2,15 +2,13 @@
 A python module for demonstrating listener tracking in local sound field synthesis.
 By default, a circular array of virtual point sources is placed around the listener.
 
-To accomplish the listener tracking two instances of the SoundScape Renderer are necessary.
-
+To accomplish the listener tracking two instances of the SoundScape Renderer (SSR) are necessary.
 The first SSR instance shifts a circular point source array 
 placed around the listener in relation to the real reproduction setup.
-
 The second SSR instance shifts the reference position of aforementioned point sources
 as the virtual reproduction setup in relation to the real sources based on audio files.
 
-Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [ssr end message]
+Usage: python opti_ssr_demo.py [SSR_IP] [SSR1 port] [SSR2 port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [ssr end message]
 """
 
 import sys
@@ -22,13 +20,13 @@ def demo(ssr_ip='localhost', ssr_port=4711, ssr2_port=4712, N=64, R=1.00, opti_u
     Parameters
     ----------
     ssr_ip : str, optional
-        IP of the server running thr SSR.
+        IP of the server running the SSR.
     ssr_port : int, optional
-        Port of SSR Network Interface. By default, port 4711.
+        Port of the first SSR`s Network Interface. By default, port 4711.
     ssr2_port : int, optional
-        Port of SSR Network Interface. By default, port 4712.
+        Port of the second SSR`s Network Interface. By default, port 4712.
     N : int, optional
-        Number of Sources. By default, 64 sources.
+        Number of sources in circular array. By default, 64 sources.
     R : float, optional
         Radius of circular source array in meter. By default, 1m.
     opti_unicast_ip : str, optional
@@ -39,7 +37,7 @@ def demo(ssr_ip='localhost', ssr_port=4711, ssr2_port=4712, N=64, R=1.00, opti_u
     opti_port : int, optional
         Port of the Motive network interface.
     ssr_end_message : str, optional
-        Symbol to terminate the XML messages send to SSR. By default, a binary zero.
+        Symbol to terminate the XML message sent to SSR. By default, a binary zero.
 
     """
     # setting arguments if executed in command line

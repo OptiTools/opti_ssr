@@ -1,7 +1,6 @@
 """
-A python module to connect to Optitrack system
-and receiving data, including rigid-body position and orientation, from it.
-By default, it connects to Optitrack software Motive on the same machine.
+A python module to connect to Optitrack optical tracking system
+and receive data from it.
 """
 
 from . import optirx as rx
@@ -10,7 +9,9 @@ import pyquaternion  # for handling quaternions
 
 class OptiTrackClient:
     """
-    A class to connect to Optitrack systems and Motive software and receive data from it.
+    Connect to Optitrack systems and Motive software and receive data,
+    including rigid body position and orientation, from it.
+    By default, it connects to Optitrack software Motive on the same machine.
 
     Attributes
     ----------
@@ -31,8 +32,7 @@ class OptiTrackClient:
 
     def get_packet_data(self, packet_types=[rx.SenderData, rx.ModelDefs, rx.FrameOfData]):
         """
-        Connect to Optitrack system (by default, on the same machine)
-        and receive packet data from it.
+        Receive desired packet data.
 
         based on optirx-demo.py
         source: https://bitbucket.org/astanin/python-optirx
@@ -56,7 +56,7 @@ class OptiTrackClient:
 
     def get_rigid_body(self, rb_id=0):
         """
-        Connect to Optitrack system and receive complete rigid body data from it.
+        Receive rigid body position, orientation and time data.
 
         Parameters
         ----------
@@ -65,10 +65,14 @@ class OptiTrackClient:
 
         Returns
         -------
-        rigid_body : list
-            Complete rigid body packet data of the desired rigid body.
+        position : numpy array
+            Rigid body position packet data of the desired rigid body.
+            Consists of x, y, z coordinates of Motive's coordinate system.
+        orientation : list
+            List of rigid body orientation data.
+            Consists of yaw-pitch-roll angles aka intrinsic Tait-Bryan angles.
         time_data : list
-            List of time data consisting of timestamp, timecode and latency packet data.
+            List of time data consisting of frame mumber, timestamp and latency packet data.
 
         """
         packet = self.get_packet_data()
@@ -87,7 +91,7 @@ class Quaternion(pyquaternion.Quaternion):
     @property
     def yaw_pitch_roll(self):
         """
-        Get the equivalent yaw-pitch-roll angles aka. intrinsic Tait-Bryan
+        Get the equivalent yaw-pitch-roll angles aka intrinsic Tait-Bryan
         angles following the z-y'-x'' convention
 
         Returns

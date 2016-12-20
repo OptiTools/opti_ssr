@@ -1,4 +1,4 @@
-LocalWFS Demo (Listener Tracking)
+LocalWFS (Listener Tracking)
 =================================
 
 .. automodule:: opti_ssr_demo_localwfs

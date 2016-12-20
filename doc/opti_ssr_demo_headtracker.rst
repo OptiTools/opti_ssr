@@ -1,4 +1,4 @@
-Headtracker Demo
+Headtracker
 ================
 
 .. automodule:: opti_ssr_demo_headtracker

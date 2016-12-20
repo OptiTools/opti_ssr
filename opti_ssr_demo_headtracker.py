@@ -1,6 +1,6 @@
 """
-A python module for demonstrating head orientation tracking for binaural
-synthesis.
+A python module for demonstrating head orientation tracking for
+binaural synthesis.
 
 Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [optitrack ip] [multicast address] [optitrack port] [end_message]
 """
@@ -10,12 +10,12 @@ import opti_ssr
 from time import sleep
 
 def demo(ssr_ip='localhost', ssr_port=4711, opti_unicast_ip=None, opti_multicast_ip='239.255.42.99', opti_port=1511, ssr_end_message='\0'):
-    """ #todo
+    """ A demo function to track the head orientation.
 
     Parameters
     ----------
     ssr_ip : str, optional
-        IP of the server running thr SSR.
+        IP of the server running the SSR.
     ssr_port : int, optional
         Port of SSR Network Interface. By default, port 4711.
     opti_unicast_ip : str, optional
@@ -26,7 +26,7 @@ def demo(ssr_ip='localhost', ssr_port=4711, opti_unicast_ip=None, opti_multicast
     opti_port : int, optional
         Port of the Motive network interface.
     ssr_end_message : str, optional
-        Symbol to terminate the XML messages send to SSR. By default, a binary zero.
+        Symbol to terminate the XML message sent to SSR. By default, a binary zero.
 
     """
     # setting arguments if executed in command line
