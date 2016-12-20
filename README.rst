@@ -6,7 +6,7 @@ in local sound field synthesis using an OptiTrack optical tracking system
 and the SoundScape Renderer.
 
 Documentation:
-
+http://opti-ssr.rtfd.io/
 
 Source code:
 https://github.com/bertmcmeyer/opti_ssr
