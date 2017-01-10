@@ -14,7 +14,7 @@ Usage: python opti_ssr_demo.py [SSR_IP] [SSR1 port] [SSR2 port] [number of src] 
 import sys
 import opti_ssr
 
-def demo(ssr_ip='localhost', ssr_port=4711, ssr2_port=4712, N=64, R=1.00, opti_unicast_ip=None, opti_multicast_ip='239.255.42.99', opti_port=1511, ssr_end_message='\0'):
+def demo(ssr_ip='localhost', ssr_port=4711, ssr2_port=4712, N=64, R=0.5, opti_unicast_ip=None, opti_multicast_ip='239.255.42.99', opti_port=1511, ssr_end_message='\0'):
     """ A demo function to track the listener position.
 
     Parameters
@@ -28,7 +28,7 @@ def demo(ssr_ip='localhost', ssr_port=4711, ssr2_port=4712, N=64, R=1.00, opti_u
     N : int, optional
         Number of sources in circular array. By default, 64 sources.
     R : float, optional
-        Radius of circular source array in meter. By default, 1m.
+        Radius of circular source array in meter. By default, 0.5m.
     opti_unicast_ip : str, optional
         IP of the Motive software to establish a unicast connection to.
         By default, no unicast connection is established.
