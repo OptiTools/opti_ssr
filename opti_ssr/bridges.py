@@ -17,7 +17,7 @@ from abc import ABCMeta, abstractmethod # for abstract classes and methods
 from .opti_client import Quaternion
 
 class _Bridge(threading.Thread):
-    """An abstract class which implements a multithreading approach to receive data 
+    """An abstract class which implements a threading approach to receive data 
        from the optitrack system and send data to the SSR simultaneously.
        To implement the functionality to send and receive the desired data, 
        subclasses need to define the functions _receive and _send.
@@ -79,6 +79,7 @@ class _Bridge(threading.Thread):
                 # send data
                 self._send(packet)
 
+
     def stop(self):
         self._quit.set()  # fire event to stop execution
 
@@ -121,6 +122,7 @@ class HeadTracker(_Bridge):
         self._origin, self._orientation,_ = self._optitrack.get_rigid_body(self._rb_id)
 
     def _receive(self):
+        self._ssr.recv_ssr_returns()
         pos, ori, time_data = self._optitrack.get_rigid_body(self._rb_id)
         # apply coordinate transform
         pos = pos - self._origin
@@ -186,6 +188,9 @@ class LocalWFS(_Bridge):
             Rigid body position data.
             Consists of x, y, z coordinates of Motive`s coordinate system.
         """
+        self._ssr.recv_ssr_returns()
+        self._ssr_virt_repr.recv_ssr_returns()
+
         center, _, _ = self._optitrack.get_rigid_body()
 
         return center

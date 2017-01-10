@@ -67,3 +67,9 @@ class SSRClient:
         orientation = '<request><source id="{0}"><orientation azimuth="{1}"/></source></request>'.format(src_id, alpha)+self._end_message
         self._s.send(orientation.encode())
 
+    def recv_ssr_returns(self):
+        """
+        Receive messages returned by the SSR.
+        """
+        msg = self._s.recv(65536)
+        #print(msg.decode(), '\n new:)
