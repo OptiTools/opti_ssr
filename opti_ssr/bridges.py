@@ -181,7 +181,7 @@ class LocalWFS(_Bridge):
 
     def _receive(self):
         """Get position data of rigid body from OptiTrack system
-        
+
         Returns
         -------
         center : list
@@ -208,5 +208,3 @@ class LocalWFS(_Bridge):
         for src_id in range(1, self._N+1):
             self._ssr.set_src_position(src_id, src_pos[src_id-1, 0], src_pos[src_id-1, 1])
             self._ssr_virt_repr.set_ref_position(center[0], center[1])
-        # sleep(0.1)
-

@@ -67,9 +67,25 @@ class SSRClient:
         orientation = '<request><source id="{0}"><orientation azimuth="{1}"/></source></request>'.format(src_id, alpha)+self._end_message
         self._s.send(orientation.encode())
 
+    def load_scene(self, path):
+        """
+        Load a scene from a specified location on the machine running the SSR.
+        """
+        scene = '<request><scene load="{0}"/></request>'.format(path)+self._end_message
+        self._s.send(scene.encode())
+
+    def set_transport_state(self, state):
+        """
+        Set a specific transport state, namely start, stop or rewind
+        to play, pause or rewind all audio tracks of the loaded scene respectively.
+        """
+        msg = '<request><state transport="{0}"/></request>'.format(state)+self._end_message
+        self._s.send(msg.encode())
+
     def recv_ssr_returns(self):
         """
         Receive messages returned by the SSR.
         """
         msg = self._s.recv(65536)
         #print(msg.decode(), '\n new:)
+        
