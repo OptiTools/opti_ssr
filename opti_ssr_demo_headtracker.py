@@ -2,9 +2,6 @@
 A python module for demonstrating head orientation tracking for
 binaural synthesis.
 
-This demo function below simply instatiates the necessary class objects according to
-the given parameters and starts the thread in the class that contains the functionality.
-
 Usage: python opti_ssr_demo.py [SSR_IP] [SSR_port] [optitrack ip] [multicast address] [optitrack port] [end_message]
 """
 

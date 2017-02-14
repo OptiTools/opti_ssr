@@ -7,7 +7,7 @@ import socket
 class SSRClient:
     """
     Establish a TCP/IP4 network connection and send XML messages
-    to communicate with the SoundScape Renderer.
+    to communicate with a specific instance of the SoundScape Renderer.
 
     Attributes
     ----------

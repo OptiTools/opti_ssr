@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name = "opti_ssr",
-    version = "0.0.5",
+    version = "0.1.0",
     packages=['opti_ssr'],
     install_requires=[
         'numpy',
