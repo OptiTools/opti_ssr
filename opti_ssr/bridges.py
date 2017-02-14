@@ -2,8 +2,11 @@
 A python module that provides tools for position and orientation tracking
 inside the SoundScape Renderer (SSR) using the OptiTrack optical tracking system.
 
-In any subclass of the abstract class _Bridge
-the functions to receive and send data need to be defined.
+This module contains the abstract class _Bridge and its subclasses.
+_Bridge is a thread class that includes the actual sequence, whereas the subclasses implement
+different applications of a connection between the SSR and a tracking system.
+In any subclass of _Bridge the functions to receive and send data need to be defined
+according to the desired application.
 """
 
 from __future__ import print_function
@@ -11,16 +14,17 @@ import sys
 import threading
 import socket
 from time import sleep
-import numpy as np
 from abc import ABCMeta, abstractmethod # for abstract classes and methods
+import numpy as np
 
 from .opti_client import Quaternion
 
 class _Bridge(threading.Thread):
-    """An abstract class which implements a threading approach to receive data 
-       from the optitrack system and send data to the SSR simultaneously.
-       To implement the functionality to send and receive the desired data, 
+    """An abstract class which implements a threading approach to receive and send data.
+       To implement the functionality to send and receive the desired data,
        subclasses need to define the functions _receive and _send.
+
+       .. note:: The returns of _receive have to be the input of _send.
     """
 
     # Python2 compatible way to declare an abstract class
@@ -119,7 +123,7 @@ class HeadTracker(_Bridge):
         Use current position and orientation of head tracker to set the origin
         and orientation of the world coordinate system.
         """
-        self._origin, self._orientation,_ = self._optitrack.get_rigid_body(self._rb_id)
+        self._origin, self._orientation, _ = self._optitrack.get_rigid_body(self._rb_id)
 
     def _receive(self):
         self._ssr.recv_ssr_returns()
@@ -136,14 +140,15 @@ class HeadTracker(_Bridge):
 
 class LocalWFS(_Bridge):
     """
-    A class for using the OptiTrack system to track the listener position 
+    A class for using the OptiTrack system to track the listener position
     in the SSR for local sound field synthesis.
 
-    The first SSR instance (ssr) shifts a circular point source array 
+    The first SSR instance (ssr) shifts a circular point source array
     placed around the listener in relation to the real reproduction setup.
 
-    The second SSR instance (ssr_virt_repr) shifts the reference position of aforementioned point sources
-    as the virtual reproduction setup in relation to the real sources based on audio files.
+    The second SSR instance (ssr_virt_repr) shifts the reference position of
+    aforementioned point sources as the virtual reproduction setup
+    in relation to the real sources based on audio files.
 
     Attributes
     ----------

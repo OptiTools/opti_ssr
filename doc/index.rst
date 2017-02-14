@@ -15,8 +15,7 @@ Contents:
    opti_ssr_demo_headtracker
    opti_ssr
 
-Indices and tables
+Index
 ==================
-
 * :ref:`genindex`
 * :ref:`modindex`

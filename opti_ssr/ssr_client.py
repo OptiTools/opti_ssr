@@ -24,7 +24,7 @@ class SSRClient:
         self._port = port
         self._end_message = end_message
 
-        #IP4 and TCP connection
+        # IP4 and TCP connection
         self._s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._s.connect((self._ip, self._port))
 

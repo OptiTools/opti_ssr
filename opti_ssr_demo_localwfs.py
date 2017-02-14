@@ -3,10 +3,13 @@ A python module for demonstrating listener tracking in local sound field synthes
 By default, a circular array of virtual point sources is placed around the listener.
 
 To accomplish the listener tracking two instances of the SoundScape Renderer (SSR) are necessary.
-The first SSR instance shifts a circular point source array 
+The first SSR instance shifts a circular point source array
 placed around the listener in relation to the real reproduction setup.
 The second SSR instance shifts the reference position of aforementioned point sources
 as the virtual reproduction setup in relation to the real sources based on audio files.
+
+This demo function below simply instatiates the necessary class objects according to
+the given parameters and starts the thread in the class that contains the functionality.
 
 Usage: python opti_ssr_demo.py [SSR_IP] [SSR1 port] [SSR2 port] [number of src] [array radius] [optitrack ip] [multicast address] [optitrack port] [ssr end message]
 """

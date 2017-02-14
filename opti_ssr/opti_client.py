@@ -3,9 +3,9 @@ A python module to connect to Optitrack optical tracking system
 and receive data from it.
 """
 
-from . import optirx as rx
 import numpy as np
 import pyquaternion  # for handling quaternions
+from . import optirx as rx
 
 class OptiTrackClient:
     """

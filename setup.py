@@ -11,11 +11,11 @@ setup(
     ],
     author = "Opti-SSR developers",
     author_email = "f.immohr@outlook.com",
-    description = ("Using the OptiTrack system for different applications "
+    description = ("Using an OptiTrack system for different applications "
                     "of the SoundScape Renderer"),
     license = "MIT",
     keywords = "optitrack motive natnet ssr soundscaperenderer".split(),
-    url = "",
+    url = "https://github.com/bertmcmeyer/opti_ssr",
     long_description=open('README.rst').read(),
     platforms='any',
     classifiers=[
