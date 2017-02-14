@@ -72,8 +72,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'opti_ssr'
-copyright = '2016, Author'
-author = 'Author'
+copyright = '2016, Opti-SSR developers'
+author = 'Opti-SSR developers'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
