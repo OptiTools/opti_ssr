@@ -69,8 +69,7 @@ class OptiTrackClient:
             Rigid body position packet data of the desired rigid body.
             Consists of x, y, z coordinates of Motive's coordinate system.
         orientation : list
-            List of rigid body orientation data.
-            Consists of yaw-pitch-roll angles aka intrinsic Tait-Bryan angles.
+            List of rigid body orientation data in quaternion representation.
         time_data : list
             List of time data consisting of frame mumber, timestamp and latency packet data.
 
@@ -78,7 +77,8 @@ class OptiTrackClient:
         packet = self.get_packet_data()
 
         position = np.array(packet.rigid_bodies[rb_id].position)
-        orientation = Quaternion(packet.rigid_bodies[rb_id].orientation)
+        qx, qy, qz, qw = tuple(packet.rigid_bodies[rb_id].orientation)
+        orientation = Quaternion(a=qw, b=qx, c=qy, d=qz)
         time_data = (packet.frameno, packet.timestamp, packet.latency)
 
         return position, orientation, time_data
