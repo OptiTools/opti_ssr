@@ -136,7 +136,7 @@ class HeadTracker(_Bridge):
 
     def _send(self, data):
         _, ypr, _ = data  # (pos, ypr, time_data)
-        self._ssr.set_ref_orientation(ypr[2]*180/np.pi+90)
+        self._ssr.set_ref_orientation(ypr[0]*180/np.pi+90)
 
 class LocalWFS(_Bridge):
     """

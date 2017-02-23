@@ -14,6 +14,7 @@ Contents:
    opti_ssr_demo_localwfs
    opti_ssr_demo_headtracker
    opti_ssr
+   NEWS
 
 Index
 ==================
