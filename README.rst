@@ -22,6 +22,9 @@ Source code:
 Python Package Index:
     http://pypi.python.org/pypi/opti_ssr/
 
+Example files to set up the SSR:
+    https://github.com/bertmcmeyer/opti_ssr-examples
+
 License:
     MIT -- see the file ``LICENSE`` for details.
 
@@ -46,7 +49,8 @@ Usage
 To use opti_ssr you can use a demo function like the basic one below.
 Simply instatiate the necessary class objects according to the given parameters and start the thread in the class that contains the functionality.
 Ready-to-use demo functions to demonstrate head orientation tracking in binaural synthesis or 
-listener tracking in local sound field synthesis are available at the github repository. ::
+listener tracking in local sound field synthesis are available at the github repository.
+The SoundScape Renderer has to be started prior to opti_ssr. ::
 
     import opti_ssr
 
