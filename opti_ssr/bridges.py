@@ -175,6 +175,9 @@ class LocalWFS(_Bridge):
 
         # second ssr instance feat. virtual sources as reproduction setup
         self._ssr_virt_repr = ssr_virt_repr
+        # reference orientation of this instance has to be changed once
+        # in order to compensate for the SSRs standard reference orientation shift
+        self._ssr_virt_repr.set_ref_orientation(0)
 
         # self._create_virtual_sources()
 
@@ -212,4 +215,5 @@ class LocalWFS(_Bridge):
         # sending position data to SSR; number of source id depends on number of existing sources
         for src_id in range(1, self._N+1):
             self._ssr.set_src_position(src_id, src_pos[src_id-1, 0], src_pos[src_id-1, 1])
-            self._ssr_virt_repr.set_ref_position(center[0], center[1])
+        self._ssr.set_ref_offset_position(center[0], center[1])
+        self._ssr_virt_repr.set_ref_position(center[0], center[1])

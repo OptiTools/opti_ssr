@@ -46,6 +46,13 @@ class SSRClient:
         ref_position = '<request><reference><position x="{0}" y="{1}"/></reference></request>'.format(x, y)+self._end_message
         self._s.send(ref_position.encode())
 
+    def set_ref_offset_position(self, x, y):
+        """
+        Set reference offset position in meters.
+        """
+        ref_offset_position = '<request><reference_offset><position x="{0}" y="{1}"/></reference_offset></request>'.format(x, y)+self._end_message
+        self._s.send(ref_offset_position.encode())
+
     def set_ref_orientation(self, alpha):
         """
         Set reference orientation in degrees (zero in positive x-direction).
