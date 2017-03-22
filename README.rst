@@ -17,13 +17,13 @@ Documentation:
     http://opti-ssr.rtfd.io/
 
 Source code:
-    https://github.com/bertmcmeyer/opti_ssr
+    https://github.com/feliximmohr/opti_ssr
 
 Python Package Index:
     http://pypi.python.org/pypi/opti_ssr/
 
 Example files to set up the SSR:
-    https://github.com/bertmcmeyer/opti_ssr-examples
+    https://github.com/feliximmohr/opti_ssr-examples
 
 License:
     MIT -- see the file ``LICENSE`` for details.
