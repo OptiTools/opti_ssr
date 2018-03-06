@@ -143,8 +143,10 @@ class LocalWFS(_Bridge):
     A class for using the OptiTrack system to track the listener position
     in the SSR for local sound field synthesis.
 
-    The first SSR instance (ssr) shifts a circular point source array
-    placed around the listener in relation to the real reproduction setup.
+    The first SSR instance (ssr) shifts the reference position and the
+    reference offset position of the real reproduction setup, such that
+    it emulates the movement a virtual source array placed around the
+    listener.
 
     The second SSR instance (ssr_virt_repr) shifts the reference position of
     aforementioned point sources as the virtual reproduction setup
@@ -158,21 +160,14 @@ class LocalWFS(_Bridge):
         First SSR instance as object of class SSRClient.
     ssr_virt_repr : class object
         Second SSR instance as object of the class SSRClient.
-    N : int
-        Number of Sources.
-    R : float
-        Radius of circular source array in meter.
     rb_id : int, optional
         ID of the rigid body to receive data from.
     """
-    def __init__(self, optitrack, ssr, ssr_virt_repr, N, R, rb_id=0, *args, **kwargs):
+    def __init__(self, optitrack, ssr, ssr_virt_repr, rb_id=0, *args, **kwargs):
         # call contructor of super class
         super(LocalWFS, self).__init__(optitrack, ssr, *args, **kwargs)
         # selects which rigid body from OptiTrack is the tracker
         self._rb_id = rb_id
-        self._N = N
-        self._R = R
-
         # second ssr instance feat. virtual sources as reproduction setup
         self._ssr_virt_repr = ssr_virt_repr
         # reference orientation of this instance has to be changed once
@@ -204,16 +199,8 @@ class LocalWFS(_Bridge):
         return center
 
     def _send(self, center):
-        """Send source and reference position data to SSR.
-           Calculation of source positions in a circular array.
+        """Send reference position data to both SSR instance.
         """
-        alpha = np.linspace(0, 2 * np.pi, self._N, endpoint=False)
-        src_pos = np.zeros((self._N, len(center)))
-        src_pos[:, 0] = self._R * np.cos(alpha)
-        src_pos[:, 1] = self._R * np.sin(alpha)
-        src_pos += center
-        # sending position data to SSR; number of source id depends on number of existing sources
-        for src_id in range(1, self._N+1):
-            self._ssr.set_src_position(src_id, src_pos[src_id-1, 0], src_pos[src_id-1, 1])
+        self._ssr.set_ref_position(-center[0], -center[1])
         self._ssr.set_ref_offset_position(center[0], center[1])
         self._ssr_virt_repr.set_ref_position(center[0], center[1])
