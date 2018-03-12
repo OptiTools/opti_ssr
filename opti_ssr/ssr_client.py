@@ -60,6 +60,13 @@ class SSRClient:
         ref_orientation = '<request><reference><orientation azimuth="{0}"/></reference></request>'.format(alpha)+self._end_message
         self._s.send(ref_orientation.encode())
 
+    def set_ref_offset_orientation(self, alpha):
+        """
+        Set reference offset position in meters.
+        """
+        ref_offset_orientation = '<request><reference_offset><orientation azimuth="{0}"/></reference_offset></request>'.format(alpha)+self._end_message
+        self._s.send(ref_offset_orientation.encode())
+
     def set_src_position(self, src_id, x, y):
         """
         Change name and position of an existing source.
@@ -95,4 +102,4 @@ class SSRClient:
         """
         msg = self._s.recv(65536)
         #print(msg.decode(), '\n new:)
-        
+
