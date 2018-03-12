@@ -1,5 +1,9 @@
 Version History
 ===============
+Version 0.1.4 (2018-??-??):
+ * Added option to change ref_offset_orientation in ssr_client.
+ * remove necessity of knowing the geometry of virtual loudspeaker distribution for LocalWFS
+
 Version 0.1.3 (2017-03-22):
  * Added option to change ref_position_offset in ssr_client.
  * Added single ref_orientation_shift for local WFS.
