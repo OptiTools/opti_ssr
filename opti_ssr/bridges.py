@@ -66,7 +66,7 @@ class _Bridge(threading.Thread):
             try:
                 packet = self._receive()
             except socket.error:  # thrown if not packet has arrived
-                sleep(0.1)
+                sleep(0.005)
             except (KeyboardInterrupt, SystemExit):
                 self._quit.set()
             else:
@@ -101,6 +101,7 @@ class HeadTracker(_Bridge):
         # origin and orientation of world coordinate system
         self._origin = np.array((0, 0, 0))
         self._orientation = Quaternion(1, 0, 0, 0)
+        self.offset = 0;
 
     def calibrate(self):
         """
@@ -123,7 +124,7 @@ class HeadTracker(_Bridge):
 
     def _send(self, data):
         _, ypr, _ = data  # (pos, ypr, time_data)
-        self._ssr.set_ref_orientation(ypr[2]*180/np.pi+90)
+        self._ssr.set_ref_orientation(ypr[2]*180/np.pi+90+self.offset)
 
 class LocalWFS(_Bridge):
     """
