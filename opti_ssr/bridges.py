@@ -95,7 +95,17 @@ class _Bridge(threading.Thread):
         return
 
 class HeadTracker(_Bridge):
-    """A class for using the OptiTrack system as a head tracker for the SSR.
+    """
+    A class for using the OptiTrack system as a head tracker for the SSR.
+
+    Attributes
+    ----------
+    optitrack : class object
+        Object of class OptiTrackClient.
+    ssr : class object
+        Object of class SSRClient.
+    rb_id : int, optional
+        ID of the rigid body to receive data from.
     """
 
     def __init__(self, optitrack, ssr, rb_id=0, *args, **kwargs):
@@ -126,7 +136,7 @@ class HeadTracker(_Bridge):
 
     def _send(self, data):
         _, ypr, _ = data  # (pos, ypr, time_data)
-        self._ssr.set_ref_orientation(ypr[2]*180/np.pi+90+self.offset)
+        self._ssr.set_ref_orientation(ypr[0]*180/np.pi+90+self.offset)
 
 class LocalWFS(_Bridge):
     """
