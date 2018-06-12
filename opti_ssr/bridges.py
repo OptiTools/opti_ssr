@@ -71,7 +71,7 @@ class _Bridge(threading.Thread):
             try:
                 packet = self._receive()
             except socket.error:  # thrown if not packet has arrived
-                sleep(0.1)
+                sleep(0.005)
             except (KeyboardInterrupt, SystemExit):
                 self._quit.set()
             else:
@@ -82,7 +82,6 @@ class _Bridge(threading.Thread):
                 self._data_available.set()
                 # send data
                 self._send(packet)
-
 
     def stop(self):
         self._quit.set()  # fire event to stop execution

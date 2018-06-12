@@ -62,7 +62,7 @@ class SSRClient:
 
     def set_ref_offset_orientation(self, alpha):
         """
-        Set reference offset position in meters.
+        Set reference offset orientation.
         """
         ref_offset_orientation = '<request><reference_offset><orientation azimuth="{0}"/></reference_offset></request>'.format(alpha)+self._end_message
         self._s.send(ref_offset_orientation.encode())
