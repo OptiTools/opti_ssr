@@ -62,7 +62,7 @@ class SSRClient:
 
     def set_ref_offset_orientation(self, alpha):
         """
-        Set reference offset orientation.
+        Set reference offset orientation in degrees (zero in positive x-direction).
         """
         ref_offset_orientation = '<request><reference_offset><orientation azimuth="{0}"/></reference_offset></request>'.format(alpha)+self._end_message
         self._s.send(ref_offset_orientation.encode())
@@ -101,5 +101,3 @@ class SSRClient:
         Receive messages returned by the SSR.
         """
         msg = self._s.recv(65536)
-        #print(msg.decode(), '\n new:)
-
