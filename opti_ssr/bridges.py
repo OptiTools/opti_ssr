@@ -108,12 +108,13 @@ class HeadTracker(_Bridge):
         ID of the rigid body to receive data from.
     angle : int, optional
         angle which is used for head rotation
-            1 - positive yaw
-           -1 - negative yaw
-            2 - positive pitch
-           -2 - negative pitch
-            3 - positive roll
-           -3 - negative roll
+        
+        * +1 - positive yaw
+        * -1 - negative yaw
+        * +2 - positive pitch
+        * -2 - negative pitch
+        * +3 - positive roll
+        * -3 - negative roll
     """
 
     def __init__(self, optitrack, ssr, rb_id=0, angle=1, *args, **kwargs):
