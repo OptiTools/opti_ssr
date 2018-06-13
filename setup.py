@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name = "opti_ssr",
-    version = "0.1.3",
+    version = "0.1.4",
     packages=['opti_ssr'],
     install_requires=[
         'numpy',
@@ -15,7 +15,7 @@ setup(
                     "of the SoundScape Renderer"),
     license = "MIT",
     keywords = "optitrack motive natnet ssr soundscaperenderer".split(),
-    url = "https://github.com/bertmcmeyer/opti_ssr",
+    url = "https://github.com/OptiTools/opti_ssr-examples",
     long_description=open('README.rst').read(),
     platforms='any',
     classifiers=[
