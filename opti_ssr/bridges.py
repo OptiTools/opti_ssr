@@ -71,7 +71,7 @@ class _Bridge(threading.Thread):
             try:
                 packet = self._receive()
             except socket.error:  # thrown if not packet has arrived
-                sleep(0.005)
+                sleep(self._timeout)
             except (KeyboardInterrupt, SystemExit):
                 self._quit.set()
             else:
@@ -106,13 +106,22 @@ class HeadTracker(_Bridge):
         Object of class SSRClient.
     rb_id : int, optional
         ID of the rigid body to receive data from.
+    angle : int, optional
+        angle which is used for head rotation
+            1 - positive yaw
+           -1 - negative yaw
+            2 - positive pitch
+           -2 - negative pitch
+            3 - positive roll
+           -3 - negative roll
     """
 
-    def __init__(self, optitrack, ssr, rb_id=0, *args, **kwargs):
+    def __init__(self, optitrack, ssr, rb_id=0, angle=1, *args, **kwargs):
         # call contructor of super class (_Bridge)
         super(HeadTracker, self).__init__(optitrack, ssr, *args, **kwargs)
         # selects which rigid body from OptiTrack is the head tracker
         self._rb_id = rb_id
+        self._angle = angle
         # origin and orientation of world coordinate system
         self._origin = np.array((0, 0, 0))
         self._orientation = Quaternion(1, 0, 0, 0)
@@ -135,7 +144,8 @@ class HeadTracker(_Bridge):
 
     def _send(self, data):
         _, ypr, _ = data  # (pos, ypr, time_data)
-        self._ssr.set_ref_orientation(ypr[0]*180/np.pi+90)
+        alpha = np.sign(self._angle)*ypr[np.absolute(self._angle)-1]*180/np.pi+90
+        self._ssr.set_ref_orientation(alpha)
 
 class LocalWFS(_Bridge):
     """
